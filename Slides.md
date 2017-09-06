@@ -6,7 +6,6 @@ build-lists: true
 ^
 Thanks for having me here
 These concepts have been around
-More pragmatic perspective
 
 ---
 
@@ -15,7 +14,7 @@ More pragmatic perspective
 ^ 
 A little background
 Encapsulate the access to data
-A lens allows to "focus"
+More pragmatic perspective
 
 ---
 
@@ -50,6 +49,7 @@ repo.add(p)
 - build powerful **abstractions**
 
 ^
+A lens allows to "focus"
 I like practical examples
 But the definition is so simple
 
@@ -471,8 +471,7 @@ let initialStateLens = Lens.zip(
 	usernameTextLens,
 	buttonStateLens)
 	
-let newModel = initialStateLens
-	.set(initialState)(oldModel)
+let newModel = initialStateLens.set(initialState)(oldModel)
 ```
 
 ^
@@ -690,9 +689,9 @@ or laws
 
 # Laws: Lens
 
-- **getSet**: the whole is the same 
-- **setGet**: the part is the same
-- **setSet**: idempotence
+- **getSet**: the whole stays the same 
+- **setGet**: the part stays the same
+- **setSet**: set is idempotent
 
 ---
 

@@ -14,7 +14,6 @@ These concepts have been around
 ^ 
 A little background
 Encapsulate the access to data
-More pragmatic perspective
 
 ---
 
@@ -23,35 +22,46 @@ More pragmatic perspective
 ^
 Functional: immutable
 Not a useful definition
-Swift value types are immutable
-
----
-
-```swift
-let repo = PersonRepository.init() // class
-
-var p = Person.init(firstName: "Jane", lastName: "Doe") // struct
-
-repo.add(p)
-
-p.firstName = "John"
-
-repo.add(p)
-```
+Swift value types are immutable (as we will see)
 
 ---
 
 # Lenses and Prisms
 
-- **encapsulate** data references and relations
+- **encapsulate** a relationship between a data structure and its parts
 - **simple** to define
 - **composition** tools
 - build powerful **abstractions**
 
 ^
 A lens allows to "focus"
-I like practical examples
-But the definition is so simple
+Let's see it graphically
+
+---
+
+![fit](image2.png)
+
+^
+a data structure
+structs and classes with properties
+enums with cases
+
+---
+
+![fit](image3.png)
+
+^
+a lens is for properties
+defines two functions
+
+---
+
+![fit](image4.png)
+
+^
+a prism is for cases
+defines two functions
+the definition in code is still pretty simple
 
 ---
 
@@ -103,7 +113,6 @@ struct Prism<Whole,Part> {
 
 ^
 first-class functions
-set doesn't care about same whole instance or different
 
 ---
 
@@ -202,11 +211,11 @@ let's use them
 
 ---
 
-![200%](image2.jpg)
+![fit](image5.png)
 
 ^
 tree-like structure
-parent-child relation
+parent-child relationship
 
 ---
 
@@ -389,6 +398,8 @@ a pain to change
 ---
 
 ### `Lens<A,B> + Lens<B,C> = Lens<A,C>`
+### `============`
+### `Prism<A,B> + Prism<B,C> = Prism<A,C>`
 
 ^ 
 we can always define something like this
@@ -444,6 +455,11 @@ we want to combine lenses horizontally
 ---
 
 ### `Lens<A,B1> + Lens<A,B2> = Lens<A,(B1,B2)>`
+### `============`
+### [fit] `Prism<A,B1> + Prism<A,B2> = Prism<A,Either<B1,B2>>`
+
+^
+prisms zip returns either
 
 ---
 
@@ -454,6 +470,17 @@ extension Lens {
 		_ b: Lens<Whole,Part2>)
 		-> Lens<Whole,(Part1,Part2)>
 		where Part == (Part1,Part2)
+	{
+		/// some code
+	}
+}
+
+extension Prism {
+	static func zip<Part1,Part2>(
+		_ a: Prism<Whole,Part1>,
+		_ b: Prism<Whole,Part2>)
+		-> Prism<Whole,Either<Part1,Part2>>
+		where Part == Either<Part1,Part2>
 	{
 		/// some code
 	}
@@ -671,14 +698,14 @@ if I give you a lens...
 
 ---
 
-# [fit]AXIOMS
+# [fit]LAWS
 
 ^
-or laws
+or axioms
 
 ---
 
-# Axioms
+# Laws
 
 - required when building large systems from **small pieces**
 - we need to **trust** the pieces
@@ -731,7 +758,32 @@ property-based testing libraries: I'm not getting into it
 - **trivial** lenses have always the same structure;
 - if written **by hand**, tests can be useful;
 - lots of **boilerplate**;
-- a perfect fit for **code generation**.
+- a perfect fit for **code generation**;
+- **Sourcery**
+
+---
+
+# Deriving `Lens` from `KeyPath`
+
+---
+
+```swift
+extension WritableKeyPath {
+	var lens: Lens<Root,Value> {
+		return Lens<Root,Value>.init(
+			get: { whole in whole[keyPath: self] },
+			set: { part in
+				{ whole in
+					var m = whole
+					m[keyPath: self] = part
+					return m
+				}
+		})
+	}
+}
+
+let passwordLens = (\LoginPage.credentials.passwordField.text).lens
+```
 
 ---
 
@@ -761,67 +813,6 @@ extension Dictionary {
 ^
 I want to able to test this
 lens laws are the answer
-
----
-
-```swift, [.highlight: 2]
-extension Dictionary {
-	static func lens(at key: Key) -> Lens<Dictionary,Value?> {
-		return Lens<Dictionary,Value?>(
-			get: { $0[key] },
-			set: { part in
-				{ whole in
-					var m_dict = whole
-					m_dict[key] = part
-					return m_dict
-				}
-		})
-	}
-}
-```
-
-^
-part is optional
-this is not composable anymore
-
----
-
-### `Lens<A,B?> + Lens<B,C> = ?`
-
----
-
-### `Lens<A,B?> + Lens<B,C> = Lens<A,C?>`
-
----
-
-```swift
-func compose<A,B,C>(
-	_ first: Lens<A,B?>,
-	_ second: Lens<B,C>)
-	-> Lens<A,C?> {
-	/// some code	
-}
-```
-
-^
-this is wrong just by the signature
-setGet will fail
-
----
-
-```swift, [.highlight: 4]
-func compose<A,B,C>(
-	_ first: Lens<A,B?>,
-	_ second: Lens<B,C>,
-	injecting: B)
-	-> Lens<A,C?> {
-	/// some code	
-}
-```
-
-^ 
-I need to produce B
-in testing it, I need to produce random Bs to inject to prove that it works
 
 ---
 

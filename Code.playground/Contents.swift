@@ -41,6 +41,11 @@ struct Prism<Whole,Part> {
 	let inject: (Part) -> Whole
 }
 
+enum Either<A,B> {
+	case left(A)
+	case right(B)
+}
+
 extension Prism {
 	func tryOver(_ transform: @escaping (Part) -> Part) -> (Whole) -> Whole {
 		return { whole in self.tryGet(whole).map { self.inject(transform($0)) } ?? whole }
@@ -50,6 +55,24 @@ extension Prism {
 		return Prism<Whole,Subpart>(
 			tryGet: { self.tryGet($0).flatMap(other.tryGet) },
 			inject: { self.inject(other.inject($0)) })
+	}
+
+	static func zip<Part1,Part2>(
+		_ a: Prism<Whole,Part1>,
+		_ b: Prism<Whole,Part2>)
+		-> Prism<Whole,Either<Part1,Part2>>
+		where Part == Either<Part1,Part2>
+	{
+		return Prism<Whole,Either<Part1,Part2>>(
+			tryGet: { a.tryGet($0).map(Either.left) ?? b.tryGet($0).map(Either.right) },
+			inject: { part in
+				switch part {
+				case .left(let value):
+					return a.inject(value)
+				case .right(let value):
+					return b.inject(value)
+				}
+		})
 	}
 }
 
@@ -244,4 +267,85 @@ func rightCompose<A,B,C>(
 	})
 }
 
+extension WritableKeyPath {
+	var lens: Lens<Root,Value> {
+		return Lens<Root,Value>.init(
+			get: { whole in whole[keyPath: self] },
+			set: { part in
+				{ whole in
+					var m = whole
+					m[keyPath: self] = part
+					return m
+				}
+		})
+	}
+}
+
+let passwordLens = (\LoginPage.credentials.passwordField.text).lens
+
 "OK"
+
+/*: ### Removed slides
+
+```swift, [.highlight: 2]
+extension Dictionary {
+static func lens(at key: Key) -> Lens<Dictionary,Value?> {
+return Lens<Dictionary,Value?>(
+get: { $0[key] },
+set: { part in
+{ whole in
+var m_dict = whole
+m_dict[key] = part
+return m_dict
+}
+})
+}
+}
+```
+
+^
+part is optional
+this is not composable anymore
+
+---
+
+### `Lens<A,B?> + Lens<B,C> = ?`
+
+---
+
+### `Lens<A,B?> + Lens<B,C> = Lens<A,C?>`
+
+---
+
+```swift
+func compose<A,B,C>(
+_ first: Lens<A,B?>,
+_ second: Lens<B,C>)
+-> Lens<A,C?> {
+/// some code
+}
+```
+
+^
+this is wrong just by the signature
+setGet will fail
+
+---
+
+```swift, [.highlight: 4]
+func compose<A,B,C>(
+_ first: Lens<A,B?>,
+_ second: Lens<B,C>,
+injecting: B)
+-> Lens<A,C?> {
+/// some code
+}
+```
+
+^
+I need to produce B
+in testing it, I need to produce random Bs to inject to prove that it works
+
+---
+
+*/

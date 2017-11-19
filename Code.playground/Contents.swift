@@ -236,13 +236,14 @@ let onProcessing = buttonStateLens.modify • processingPrism.tryModify
 let newModel4 = onProcessing(advanceProcessingMessage)(oldModel)
 
 struct LensLaw {
-	static func setGet<Whole, Part>(
-		lens: Lens<Whole,Part>,
-		whole: Whole, part: Part)
-		-> Bool where Part: Equatable
-	{
-		return lens.get(lens.set(part)(whole)) == part
-	}
+    static func setGet<Whole, Part>(
+        _ lens: Lens<Whole,Part>,
+        _ whole: Whole,
+        _ part: Part)
+        -> Bool where Part: Equatable
+    {
+        return lens.get(lens.set(part)(whole)) == part
+    }
 }
 
 extension Dictionary {

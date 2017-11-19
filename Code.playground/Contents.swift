@@ -1,10 +1,10 @@
 /// "over" is now "modify"
 
-precedencegroup OpticsCompositionPrecedence {
+precedencegroup LeftCompositionPrecedence {
     associativity: left
 }
 
-infix operator .. : OpticsCompositionPrecedence
+infix operator .. : LeftCompositionPrecedence
 
 struct Lens<Whole,Part> {
 	let get: (Whole) -> Part

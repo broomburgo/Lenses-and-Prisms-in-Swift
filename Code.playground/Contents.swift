@@ -1,10 +1,18 @@
+/// "over" is now "modify"
+
+precedencegroup OpticsCompositionPrecedence {
+    associativity: left
+}
+
+infix operator .. : OpticsCompositionPrecedence
+
 struct Lens<Whole,Part> {
 	let get: (Whole) -> Part
 	let set: (Part) -> (Whole) -> Whole
 }
 
 extension Lens {
-	func over(_ transform: @escaping (Part) -> Part) -> (Whole) -> Whole {
+	func modify(_ transform: @escaping (Part) -> Part) -> (Whole) -> Whole {
 		return { whole in self.set(transform(self.get(whole)))(whole) }
 	}
 	
@@ -17,6 +25,10 @@ extension Lens {
 				}
 		})
 	}
+    
+    static func .. <Subpart> (lhs: Lens<Whole,Part>, rhs: Lens<Part,Subpart>) -> Lens<Whole,Subpart> {
+        return lhs.compose(rhs)
+    }
 	
 	static func zip<Part1,Part2>(
 		_ a: Lens<Whole,Part1>,
@@ -47,7 +59,7 @@ enum Either<A,B> {
 }
 
 extension Prism {
-	func tryOver(_ transform: @escaping (Part) -> Part) -> (Whole) -> Whole {
+	func tryModify(_ transform: @escaping (Part) -> Part) -> (Whole) -> Whole {
 		return { whole in self.tryGet(whole).map { self.inject(transform($0)) } ?? whole }
 	}
 	
@@ -56,6 +68,10 @@ extension Prism {
 			tryGet: { self.tryGet($0).flatMap(other.tryGet) },
 			inject: { self.inject(other.inject($0)) })
 	}
+    
+    static func .. <Subpart> (lhs: Prism<Whole,Part>, rhs: Prism<Part,Subpart>) -> Prism<Whole,Subpart> {
+        return lhs.compose(rhs)
+    }
 
 	static func zip<Part1,Part2>(
 		_ a: Prism<Whole,Part1>,
@@ -175,9 +191,7 @@ extension TextField {
 }
 
 let titleLens = LoginPage.lens.title
-let usernameTextLens = LoginPage.lens.credentials
-	.compose(CredentialBox.lens.usernameField)
-	.compose(TextField.lens.text)
+let usernameTextLens = LoginPage.lens.credentials..CredentialBox.lens.usernameField..TextField.lens.text
 let buttonStateLens = LoginPage.lens.buttonState
 
 let newModel1 = titleLens.set(initialState.title)(usernameTextLens.set(initialState.username)(buttonStateLens.set(initialState.buttonState)(oldModel)))
@@ -192,6 +206,8 @@ let newModel2 = initialStateLens
 
 func advanceProcessingMessage(_ previous: String) -> String {
 	switch previous {
+    case "":
+        return "Please wait"
 	case "Please wait":
 		return "Almost there"
 	case "Almost there":
@@ -203,7 +219,7 @@ func advanceProcessingMessage(_ previous: String) -> String {
 
 let processingPrism = ViewState<Button>.prism.processing
 
-let newModel3 = buttonStateLens.over(processingPrism.tryOver(advanceProcessingMessage))(oldModel)
+let newModel3 = buttonStateLens.modify(processingPrism.tryModify(advanceProcessingMessage))(oldModel)
 
 infix operator •
 
@@ -215,7 +231,7 @@ func • <A,B,C> (
 	return { left(right($0)) }
 }
 
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
+let onProcessing = buttonStateLens.modify • processingPrism.tryModify
 
 let newModel4 = onProcessing(advanceProcessingMessage)(oldModel)
 

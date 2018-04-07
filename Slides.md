@@ -28,7 +28,7 @@ Swift value types are immutable (as we will see)
 - build powerful **abstractions**
 
 ^
-A lens allows to "focus"
+Optics allows to "focus"
 Let's see it graphically
 
 ---
@@ -570,25 +570,19 @@ let modifyProcessingMessage = processingPrism.tryModify
 ```
 
 ---
-<!--
-### `Lens<LoginPage,ViewState<Button>>` 
-### `+`
-### `Prism<ViewState<Button>,String>`
-### `=`
-### ?
 
-^
-there is another optic to do this
+```swift, [.highlight: 1,2,7,8]
+/// ((ViewState<Button>) -> ViewState<Button>) -> (LoginPage) -> LoginPage
+let modifyLoginPage = buttonStateLens.modify
 
----
+/// Prism<ViewState<Button>,String>
+let processingPrism = ViewState<Button>.prism.processing
 
-## Who cares? Under the hood it's just functions.
-
-^
-functions compose if the types match
+/// ((String) -> String) -> (ViewState<Button>) -> ViewState<Button>
+let modifyProcessingMessage = processingPrism.tryModify
+```
 
 ---
--->
 
 ### `(A -> B) + (B -> C) = (A -> C)`
 
@@ -773,14 +767,17 @@ let passwordLensAgain = °\LoginPage.credentials.passwordField.text
 extension Dictionary {
   static func lens(at key: Key) -> Lens<Dictionary,Value?> {
     return Lens<Dictionary,Value?>(
-      get: { $0[key] },
+      get: { 
+        $0[key]
+      },
       set: { part in
         { whole in
-        var m_dict = whole
+          var m_dict = whole
           m_dict[key] = part
           return m_dict
         }
-    })
+      }
+    )
   }
 }
 ```
@@ -795,14 +792,17 @@ lens laws are the answer
 extension Dictionary {
   static func lens(at key: Key) -> Lens<Dictionary,Value?> {
     return Lens<Dictionary,Value?>(
-      get: { $0[key] },
+      get: { 
+        $0[key]
+      },
       set: { part in
         { whole in
-        var m_dict = whole
+          var m_dict = whole
           m_dict[key] = part
           return m_dict
         }
-      })
+      }
+    )
   }
 }
 ```

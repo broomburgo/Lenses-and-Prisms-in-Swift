@@ -1,19 +1,13 @@
 theme: Fira, 1
 build-lists: true
 
+[.footer:![30%](by-nc-sa.eu.png) This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/3.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.]
+
 # [fit] Lenses and Prisms in Swift
 
 ^
 Thanks for having me here
 These concepts have been around
-
----
-
-![fit](image1.png)
-
-^ 
-A little background
-Encapsulate the access to data
 
 ---
 
@@ -67,13 +61,13 @@ the definition in code is still pretty simple
 
 ```swift
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -84,13 +78,13 @@ Many ways to define
 
 ```swift, [.highlight: 1,4]
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -101,13 +95,13 @@ struct generic in 2 parameters
 
 ```swift, [.highlight: 2,3]
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -118,13 +112,13 @@ first-class functions
 
 ```swift, [.highlight: 6,9]
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -135,10 +129,10 @@ prism is for enums
 
 ```swift
 enum ViewState<T> {
-    case empty
-    case processing(String)
-    case failed(Error)
-    case completed(T)
+  case empty
+  case processing(String)
+  case failed(Error)
+  case completed(T)
 }
 ```
 
@@ -150,10 +144,10 @@ part depends on the case
 
 ```swift, [.highlight: 1,3,6]
 enum ViewState<T> {
-    case empty
-    case processing(String)
-    case failed(Error)
-    case completed(T)
+  case empty
+  case processing(String)
+  case failed(Error)
+  case completed(T)
 }
 ```
 
@@ -161,13 +155,13 @@ enum ViewState<T> {
 
 ```swift, [.highlight: 7]
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -178,13 +172,13 @@ the case could be not the one the prism focuses on
 
 ```swift, [.highlight: 8]
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -195,13 +189,13 @@ inject discards the previous value
 
 ```swift
 struct Lens<Whole,Part> {
-    let get: (Whole) -> Part
-    let set: (Part) -> (Whole) -> Whole
+  let get: (Whole) -> Part
+  let set: (Part) -> (Whole) -> Whole
 }
 
 struct Prism<Whole,Part> {
-    let tryGet: (Whole) -> Part?
-    let inject: (Part) -> Whole
+  let tryGet: (Whole) -> Part?
+  let inject: (Part) -> Whole
 }
 ```
 
@@ -246,25 +240,25 @@ manipulate data from the outside
 
 ```swift
 struct LoginPage {
-    var title: String
-    var credendials: CredentialBox
-    var buttonState: ViewState<Button>
+  var title: String
+  var credendials: CredentialBox
+  var buttonState: ViewState<Button>
 }
 
 struct CredentialBox {
-    var usernameField: TextField
-    var passwordField: TextField
+  var usernameField: TextField
+  var passwordField: TextField
 }
 
 struct TextField {
-    var text: String
-    var placeholder: String?
-    var secureText: Bool
+  var text: String
+  var placeholder: String?
+  var secureText: Bool
 }
 
 struct Button {
-    var title: String
-    var enabled: Bool
+  var title: String
+  var enabled: Bool
 }
 ```
 
@@ -275,25 +269,25 @@ everything is var (value types)
 
 ```swift, [.highlight: 4,18-21]
 struct LoginPage {
-    var title: String
-    var credendials: CredentialBox
-    var buttonState: ViewState<Button>
+  var title: String
+  var credendials: CredentialBox
+  var buttonState: ViewState<Button>
 }
 
 struct CredentialBox {
-    var usernameField: TextField
-    var passwordField: TextField
+  var usernameField: TextField
+  var passwordField: TextField
 }
 
 struct TextField {
-    var text: String
-    var placeholder: String?
-    var secureText: Bool
+  var text: String
+  var placeholder: String?
+  var secureText: Bool
 }
 
 struct Button {
-    var title: String
-    var enabled: Bool
+  var title: String
+  var enabled: Bool
 }
 ```
 
@@ -304,17 +298,22 @@ async validation with ViewState enum
 
 ```swift
 extension CredentialBox {
-	enum lens {
-		static let usernameField = Lens<CredentialBox,TextField>.init(
-			get: { $0.usernameField },
-			set: { part in
-				{ whole in
-					var m = whole
-					m.usernameField = part
-					return m
-				}
-		})
-	}
+  enum lens {
+    static var usernameField: Lens<CredentialBox,TextField> {
+      return Lens<CredentialBox,TextField>.init(
+        get: { 
+          $0.usernameField
+        },
+        set: { part in
+          { whole in
+            var m = whole
+            m.usernameField = part
+            return m
+          }
+        }
+      )
+    }
+  }
 }
 ```
 
@@ -326,18 +325,21 @@ only one "sane" way to write this
 
 ```swift
 extension ViewState {
-	enum prism {
-		static var processing: Prism<ViewState,String> {
-			return .init(
-				tryGet: {
-					guard case .processing(let message) = $0 else {
-						return nil
-					}
-					return message
-				},
-				inject: { .processing($0) })
-		}
-	}
+  enum prism {
+    static var processing: Prism<ViewState,String> {
+      return .init(
+        tryGet: {
+          guard case .processing(let message) = $0 else {
+            return nil
+          }
+          return message
+        },
+        inject: { 
+          .processing($0)
+        }
+      )
+    }
+  }
 }
 ```
 
@@ -361,11 +363,11 @@ value types allow safe "mutation" (not really mutation)
 
 ```swift
 let initialState = (
-	title: "Welcome back!",
-	username: savedUsername,
-	buttonState: ViewState<Button>.completed(Button.init(
-		title: "Login",
-		enabled: false)))
+  title: "Welcome back!",
+  username: savedUsername,
+  buttonState: ViewState<Button>.completed(Button.init(
+    title: "Login",
+    enabled: false)))
 
 var m_newModel = oldModel
 m_newModel.title = initialState.title
@@ -380,11 +382,11 @@ rough edges
 
 ```swift, [.highlight: 10]
 let initialState = (
-	title: "Welcome back!",
-	username: savedUsername,
-	buttonState: ViewState<Button>.completed(Button.init(
-		title: "Login",
-		enabled: false)))
+  title: "Welcome back!",
+  username: savedUsername,
+  buttonState: ViewState<Button>.completed(Button.init(
+    title: "Login",
+    enabled: false)))
 
 var m_newModel = oldModel
 m_newModel.title = initialState.title
@@ -408,16 +410,16 @@ no prior knowledge of the data structure
 ---
 
 ```swift
-extension Lens {	
-	func compose<Subpart>(_ other: Lens<Part,Subpart>) -> Lens<Whole,Subpart> {
-		/// some code
-	}
+extension Lens {  
+  func compose<Subpart>(_ other: Lens<Part,Subpart>) -> Lens<Whole,Subpart> {
+    /// some code
+  }
 }
 
-extension Prism {	
-	func compose<Subpart>(_ other: Prism<Part,Subpart>) -> Prism<Whole,Subpart> {
-		/// some code
-	}
+extension Prism {  
+  func compose<Subpart>(_ other: Prism<Part,Subpart>) -> Prism<Whole,Subpart> {
+    /// some code
+  }
 }
 ```
 
@@ -465,25 +467,25 @@ prisms zip returns either
 
 ```swift
 extension Lens {
-	static func zip<Part1,Part2>(
-		_ a: Lens<Whole,Part1>,
-		_ b: Lens<Whole,Part2>)
-		-> Lens<Whole,(Part1,Part2)>
-		where Part == (Part1,Part2)
-	{
-		/// some code
-	}
+  static func zip<Part1,Part2>(
+    _ a: Lens<Whole,Part1>,
+    _ b: Lens<Whole,Part2>)
+    -> Lens<Whole,(Part1,Part2)>
+    where Part == (Part1,Part2)
+  {
+    /// some code
+  }
 }
 
 extension Prism {
-	static func zip<Part1,Part2>(
-		_ a: Prism<Whole,Part1>,
-		_ b: Prism<Whole,Part2>)
-		-> Prism<Whole,Either<Part1,Part2>>
-		where Part == Either<Part1,Part2>
-	{
-		/// some code
-	}
+  static func zip<Part1,Part2>(
+    _ a: Prism<Whole,Part1>,
+    _ b: Prism<Whole,Part2>)
+    -> Prism<Whole,Either<Part1,Part2>>
+    where Part == Either<Part1,Part2>
+  {
+    /// some code
+  }
 }
 ```
 
@@ -494,10 +496,10 @@ we can define it for any number of lenses
 
 ```swift
 let initialStateLens = Lens.zip(
-	titleLens,
-	usernameTextLens,
-	buttonStateLens)
-	
+  titleLens,
+  usernameTextLens,
+  buttonStateLens)
+  
 let newModel = initialStateLens.set(initialState)(oldModel)
 ```
 
@@ -517,14 +519,14 @@ we want change the message as time passes
 
 ```swift
 func advanceProcessingMessage(_ previous: String) -> String {
-	switch previous {
-	case "Please wait":
-		return "Almost there"
-	case "Almost there":
-		return "ALMOST THERE"
-	default:
-		return previous + "!"
-	}
+  switch previous {
+  case "Please wait":
+    return "Almost there"
+  case "Almost there":
+    return "ALMOST THERE"
+  default:
+    return previous + "!"
+  }
 }
 ```
 
@@ -532,30 +534,43 @@ func advanceProcessingMessage(_ previous: String) -> String {
 clean, isolated pure function
 a small piece of business logic
 not a pure set
-we need a over function
+we need a modify function
 
 ---
 
 ```swift
 extension Lens {
-	func over(_ transform: (Part) -> Part) -> (Whole) -> Whole {
-		/// some code
-	}
+  func modify(_ transform: (Part) -> Part) -> (Whole) -> Whole {
+    /// some code
+  }
 }
 
 extension Prism {
-	func tryOver(_ transform: (Part) -> Part) -> (Whole) -> Whole {
-		/// some code
-	}
+  func tryModify(_ transform: (Part) -> Part) -> (Whole) -> Whole {
+    /// some code
+  }
 }
 ```
 
 ^ 
-tryOver "tries"
+tryModify "tries"
 the starting `Whole` must be the correct case, otherwise it returns it unmodified
 
 ---
 
+```swift
+/// ((ViewState<Button>) -> ViewState<Button>) -> (LoginPage) -> LoginPage
+let modifyLoginPage = buttonStateLens.modify
+
+/// Prism<ViewState<Button>,String>
+let processingPrism = ViewState<Button>.prism.processing
+
+/// ((String) -> String) -> (ViewState<Button>) -> ViewState<Button>
+let modifyProcessingMessage = processingPrism.tryModify
+```
+
+---
+<!--
 ### `Lens<LoginPage,ViewState<Button>>` 
 ### `+`
 ### `Prism<ViewState<Button>,String>`
@@ -563,11 +578,7 @@ the starting `Whole` must be the correct case, otherwise it returns it unmodifie
 ### ?
 
 ^
-no good way to do this
-
----
-
-## What if lenses and prisms don't compose well?
+there is another optic to do this
 
 ---
 
@@ -577,6 +588,7 @@ no good way to do this
 functions compose if the types match
 
 ---
+-->
 
 ### `(A -> B) + (B -> C) = (A -> C)`
 
@@ -586,46 +598,25 @@ can always be done
 ---
 
 ```swift
-infix operator •
+infix operator >>>
 
-func • <A,B,C> (
-	_ left: @escaping (B) -> C,
-	_ right: @escaping (A) -> B)
+func >>> <A,B,C> (
+	_ left: @escaping (A) -> B,
+	_ right: @escaping (B) -> C)
 	-> (A) -> C
 {
-	return { left(right($0)) }
+	return { right(left($0)) }
 }
 ```
 
 ^
-let's combine lens over with prism tryOver
-
----
-
-```swift, [.highlight: 1]
-let processingPrism = ViewState<Button>.prism.processing
-
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
-
-let newModel = onProcessing(advanceProcessingMessage)(oldModel)
-```
-
----
-
-```swift, [.highlight: 1-3]
-let processingPrism = ViewState<Button>.prism.processing
-
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
-
-let newModel = onProcessing(advanceProcessingMessage)(oldModel)
-```
+let's combine lens modify with prism tryModify
 
 ---
 
 ```swift
-let processingPrism = ViewState<Button>.prism.processing
-
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
+/// ((String) -> String) -> (LoginPage) -> LoginPage
+let onProcessing =  modifyProcessingMessage >>> modifyLoginPage
 
 let newModel = onProcessing(advanceProcessingMessage)(oldModel)
 ```
@@ -633,50 +624,29 @@ let newModel = onProcessing(advanceProcessingMessage)(oldModel)
 ^
 easy?
 it looks like magic
-
----
-
-```swift, [.highlight: 3]
-let processingPrism = ViewState<Button>.prism.processing
-
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
-
-let newModel = onProcessing(advanceProcessingMessage)(oldModel)
-```
-
-^
 let's unpack
 
 ---
 
-### `(B -> B) -> (A -> A)` 
-### `•`
-### `(C -> C) -> (B -> B)`
+### `(A -> A) -> (B -> B)` 
+### `>>>`
+### `(B -> B) -> (C -> C)`
 ### `=`
-### `(C -> C) -> (A -> A)`
+### `(A -> A) -> (C -> C)`
 
 ^
 let's use the real types
 
 ---
 
-#### `(ViewState<Button> -> ViewState<Button>) -> (LoginPage -> LoginPage)` 
-#### `•`
-#### `(String -> String) -> (ViewState<Button> -> ViewState<Button>)`
+#### `(String -> String) -> (VS<Button> -> VS<Button>)` 
+#### `>>>`
+#### `(VS<Button> -> VS<Button>) -> (LoginPage -> LoginPage)`
 #### `=`
 #### `(String -> String) -> (LoginPage -> LoginPage)`
 
 ---
 
-```swift, [.highlight: 5]
-let processingPrism = ViewState<Button>.prism.processing
-
-let onProcessing = buttonStateLens.over • processingPrism.tryOver
-
-let newModel = onProcessing(advanceProcessingMessage)(oldModel)
-```
-
----
 [.autoscale: true]
 # Let's recap
 
@@ -734,14 +704,14 @@ the whole instance is completely defined by its parts
 
 ```swift
 struct LensLaw {
-	static func setGet<Whole, Part>(
-		lens: Lens<Whole,Part>,
-		whole: Whole,
-		part: Part)
-		-> Bool where Part: Equatable
-	{
-		return lens.get(lens.set(part)(whole)) == part
-	}
+  static func setGet<Whole, Part>(
+    lens: Lens<Whole,Part>,
+    whole: Whole,
+    part: Part)
+    -> Bool where Part: Equatable
+  {
+    return lens.get(lens.set(part)(whole)) == part
+  }
 }
 ```
 
@@ -769,20 +739,25 @@ property-based testing libraries: I'm not getting into it
 
 ```swift
 extension WritableKeyPath {
-	var lens: Lens<Root,Value> {
-		return Lens<Root,Value>.init(
-			get: { whole in whole[keyPath: self] },
-			set: { part in
-				{ whole in
-					var m = whole
-					m[keyPath: self] = part
-					return m
-				}
-		})
-	}
+  var lens: Lens<Root,Value> {
+    return Lens<Root,Value>.init(
+      get: { whole in 
+        whole[keyPath: self] 
+      },
+      set: { part in
+        { whole in
+          var m = whole
+          m[keyPath: self] = part
+          return m
+        }
+      }
+    )
+  }
 }
 
 let passwordLens = (\LoginPage.credentials.passwordField.text).lens
+
+let passwordLensAgain = °\LoginPage.credentials.passwordField.text
 ```
 
 ---
@@ -796,17 +771,17 @@ let passwordLens = (\LoginPage.credentials.passwordField.text).lens
 
 ```swift
 extension Dictionary {
-	static func lens(at key: Key) -> Lens<Dictionary,Value?> {
-		return Lens<Dictionary,Value?>(
-			get: { $0[key] },
-			set: { part in
-				{ whole in
-					var m_dict = whole
-					m_dict[key] = part
-					return m_dict
-				}
-		})
-	}
+  static func lens(at key: Key) -> Lens<Dictionary,Value?> {
+    return Lens<Dictionary,Value?>(
+      get: { $0[key] },
+      set: { part in
+        { whole in
+        var m_dict = whole
+          m_dict[key] = part
+          return m_dict
+        }
+    })
+  }
 }
 ```
 
@@ -818,17 +793,17 @@ lens laws are the answer
 
 ```swift, [.highlight: 2]
 extension Dictionary {
-	static func lens(at key: Key) -> Lens<Dictionary,Value?> {
-		return Lens<Dictionary,Value?>(
-			get: { $0[key] },
-			set: { part in
-				{ whole in
-					var m_dict = whole
-					m_dict[key] = part
-					return m_dict
-				}
-			})
-	}
+  static func lens(at key: Key) -> Lens<Dictionary,Value?> {
+    return Lens<Dictionary,Value?>(
+      get: { $0[key] },
+      set: { part in
+        { whole in
+        var m_dict = whole
+          m_dict[key] = part
+          return m_dict
+        }
+      })
+  }
 }
 ```
 
@@ -842,46 +817,56 @@ this is not composable anymore
 
 ---
 
-### `Lens<A,B?> + Lens<B,C> = Lens<A,C?>`
+```swift
+extension Optional {
+  static var prism: Prism<Optional,Wrapped> {
+    return Prism<Optional,Wrapped>.init(
+      tryGet: { $0 },
+      inject: Optional.some
+    )
+  }
+}
+```
+
+---
+
+### `Lens<A,B?> + Prism<B?,B> + Lens<B,C> = ?`
 
 ---
 
 ```swift
-func compose<A,B,C>(
-_ first: Lens<A,B?>,
-_ second: Lens<B,C>)
--> Lens<A,C?> {
-/// some code
+struct Affine<Whole,Part> {
+  let tryGet: (Whole) -> Part?
+  let trySet: (Part) -> (Whole) -> Whole?
 }
-```
 
-^
-this is wrong just by the signature
-setGet will fail
+/// laws are similar to lens'
+/// es. Affine to an index of an Array
+```
 
 ---
 
-```swift, [.highlight: 4]
-func compose<A,B,C>(
-_ first: Lens<A,B?>,
-_ second: Lens<B,C>,
-injecting: B)
--> Lens<A,C?> {
-/// some code
-}
-```
-
-^
-I need to produce B
-in testing it, I need to produce random Bs to inject to prove that it works
+### `Lens<A,B> + Prism<B,C> = Affine<A,C>`
 
 ---
 
-# **Optics** library
+### `Lens<A,B> -> Affine<A,B>`
+### `Prism<A,B> -> Affine<A,B>`
 
-https://github.com/facile-it/Optics
+---
 
-- Lens and Prism **definitions**
+### `Lens<A,B?> + Prism<B?,B> + Lens<B,C> =`
+### `Affine<A,B> + Lens<B,C> =`
+### `Affine<A,B> + Affine<B,C> =`
+### `Affine<A,C>`
+
+---
+
+# **FunctionalKit** library
+
+https://github.com/facile-it/FunctionalKit
+
+- Lens, Prism, Affine **definitions**
 - some **combinators**
 - **Law** functions
 
@@ -898,5 +883,5 @@ definitions for laws for testing one's own lenses and prisms
 
 - @_logicist
 - https://github.com/broomburgo/Lenses-and-Prisms-in-Swift
-- https://github.com/facile-it/Optics
-- B.W.'s talk: https://youtu.be/ofjehH9f-CU
+- https://github.com/facile-it/FunctionalKit
+- Brandon Williams's original talk on lenses: https://youtu.be/ofjehH9f-CU

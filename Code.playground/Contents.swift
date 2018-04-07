@@ -221,17 +221,23 @@ let processingPrism = ViewState<Button>.prism.processing
 
 let newModel3 = buttonStateLens.modify(processingPrism.tryModify(advanceProcessingMessage))(oldModel)
 
-infix operator •
+/// ((ViewState<Button>) -> ViewState<Button>) -> (LoginPage) -> LoginPage
+let modifyLoginPage = buttonStateLens.modify
 
-func • <A,B,C> (
-	_ left: @escaping (B) -> C,
-	_ right: @escaping (A) -> B)
+/// ((String) -> String) -> (ViewState<Button>) -> ViewState<Button>
+let modifyProcessingMessage = processingPrism.tryModify
+
+infix operator >>>
+
+func >>> <A,B,C> (
+	_ left: @escaping (A) -> B,
+	_ right: @escaping (B) -> C)
 	-> (A) -> C
 {
-	return { left(right($0)) }
+	return { right(left($0)) }
 }
 
-let onProcessing = buttonStateLens.modify • processingPrism.tryModify
+let onProcessing =  modifyProcessingMessage >>> modifyLoginPage
 
 let newModel4 = onProcessing(advanceProcessingMessage)(oldModel)
 
@@ -260,30 +266,6 @@ extension Dictionary {
 	}
 }
 
-//func wrongCompose<A,B,C>(
-//	_ first: Lens<A,B?>,
-//	_ second: Lens<B,C>)
-//	-> Lens<A,C?>
-
-func rightCompose<A,B,C>(
-	_ first: Lens<A,B?>,
-	_ second: Lens<B,C>,
-	injecting: @escaping @autoclosure () -> B)
-	-> Lens<A,C?>
-{
-	return Lens<A,C?>.init(
-		get: { whole in first.get(whole).map(second.get) },
-		set: { optionalPart in { whole in
-			switch optionalPart {
-			case .some(let value):
-				return first.set(second.set(value)(first.get(whole) ?? injecting()))(whole)
-			case .none:
-				return first.set(nil)(whole)
-			}
-		}
-	})
-}
-
 extension WritableKeyPath {
 	var lens: Lens<Root,Value> {
 		return Lens<Root,Value>.init(
@@ -299,5 +281,18 @@ extension WritableKeyPath {
 }
 
 let passwordLens = (\LoginPage.credentials.passwordField.text).lens
+
+extension Optional {
+	static var prism: Prism<Optional,Wrapped> {
+		return Prism<Optional,Wrapped>.init(
+			tryGet: { $0 },
+			inject: Optional.some)
+	}
+}
+
+struct Affine<Whole,Part> {
+	let tryGet: (Whole) -> Part?
+	let trySet: (Part) -> (Whole) -> Whole?
+}
 
 "OK"

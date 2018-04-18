@@ -301,14 +301,14 @@ extension CredentialBox {
   enum lens {
     static var usernameField: Lens<CredentialBox,TextField> {
       return Lens<CredentialBox,TextField>.init(
-        get: { 
-          $0.usernameField
+        get: { whole in
+          whole.usernameField
         },
         set: { part in
           { whole in
-            var m = whole
-            m.usernameField = part
-            return m
+            var mutableWhole = whole
+            mutableWhole.usernameField = part
+            return mutableWhole
           }
         }
       )
@@ -328,14 +328,14 @@ extension ViewState {
   enum prism {
     static var processing: Prism<ViewState,String> {
       return .init(
-        tryGet: {
-          guard case .processing(let message) = $0 else {
+        tryGet: { whole in
+          guard case .processing(let message) = whole else {
             return nil
           }
           return message
         },
-        inject: { 
-          .processing($0)
+        inject: { part in
+          .processing(part)
         }
       )
     }
@@ -369,10 +369,10 @@ let initialState = (
     title: "Login",
     enabled: false)))
 
-var m_newModel = oldModel
-m_newModel.title = initialState.title
-m_newModel.credendials.usernameField.text = initialState.username
-m_newModel.buttonState = initialState.buttonState
+var mutableNewModel = oldModel
+mutableNewModel.title = initialState.title
+mutableNewModel.credendials.usernameField.text = initialState.username
+mutableNewModel.buttonState = initialState.buttonState
 ```
 
 ^
@@ -388,10 +388,10 @@ let initialState = (
     title: "Login",
     enabled: false)))
 
-var m_newModel = oldModel
-m_newModel.title = initialState.title
-m_newModel.credendials.usernameField.text = initialState.username
-m_newModel.buttonState = initialState.buttonState
+var mutableNewModel = oldModel
+mutableNewModel.title = initialState.title
+mutableNewModel.credendials.usernameField.text = initialState.username
+mutableNewModel.buttonState = initialState.buttonState
 ```
 
 ^
@@ -399,9 +399,7 @@ a pain to change
 
 ---
 
-### `Lens<A,B> + Lens<B,C> = Lens<A,C>`
-### `============`
-### `Prism<A,B> + Prism<B,C> = Prism<A,C>`
+### [fit] `Lens<A,B> + Lens<B,C> = Lens<A,C>`
 
 ^ 
 we can always define something like this
@@ -456,12 +454,7 @@ we want to combine lenses horizontally
 
 ---
 
-### `Lens<A,B1> + Lens<A,B2> = Lens<A,(B1,B2)>`
-### `============`
-### [fit] `Prism<A,B1> + Prism<A,B2> = Prism<A,Either<B1,B2>>`
-
-^
-prisms zip returns either
+### [fit] `Lens<A,B1> + Lens<A,B2> = Lens<A,(B1,B2)>`
 
 ---
 
@@ -491,6 +484,7 @@ extension Prism {
 
 ^
 we can define it for any number of lenses
+prisms zip returns either
 
 ---
 
@@ -559,27 +553,35 @@ the starting `Whole` must be the correct case, otherwise it returns it unmodifie
 ---
 
 ```swift
-/// ((ViewState<Button>) -> ViewState<Button>) -> (LoginPage) -> LoginPage
-let modifyLoginPage = buttonStateLens.modify
-
 /// Prism<ViewState<Button>,String>
 let processingPrism = ViewState<Button>.prism.processing
 
-/// ((String) -> String) -> (ViewState<Button>) -> ViewState<Button>
-let modifyProcessingMessage = processingPrism.tryModify
+let modifyLoginPage: ((ViewState<Button>) -> ViewState<Button>)
+  -> (LoginPage) -> LoginPage
+  
+modifyLoginPage = buttonStateLens.modify
+
+let modifyProcessingMessage: ((String) -> String)
+  -> (ViewState<Button>) -> ViewState<Button>
+  
+modifyProcessingMessage = processingPrism.tryModify
 ```
 
 ---
 
-```swift, [.highlight: 1,2,7,8]
-/// ((ViewState<Button>) -> ViewState<Button>) -> (LoginPage) -> LoginPage
-let modifyLoginPage = buttonStateLens.modify
-
+```swift, [.highlight: 4,5,9,10]
 /// Prism<ViewState<Button>,String>
 let processingPrism = ViewState<Button>.prism.processing
 
-/// ((String) -> String) -> (ViewState<Button>) -> ViewState<Button>
-let modifyProcessingMessage = processingPrism.tryModify
+let modifyLoginPage: ((ViewState<Button>) -> ViewState<Button>)
+  -> (LoginPage) -> LoginPage
+  
+modifyLoginPage = buttonStateLens.modify
+
+let modifyProcessingMessage: ((String) -> String)
+  -> (ViewState<Button>) -> ViewState<Button>
+  
+modifyProcessingMessage = processingPrism.tryModify
 ```
 
 ---
@@ -609,8 +611,9 @@ let's combine lens modify with prism tryModify
 ---
 
 ```swift
-/// ((String) -> String) -> (LoginPage) -> LoginPage
-let onProcessing =  modifyProcessingMessage >>> modifyLoginPage
+let onProcessing: ((String) -> String) -> (LoginPage) -> LoginPage
+
+onProcessing = modifyProcessingMessage >>> modifyLoginPage
 
 let newModel = onProcessing(advanceProcessingMessage)(oldModel)
 ```
@@ -618,26 +621,6 @@ let newModel = onProcessing(advanceProcessingMessage)(oldModel)
 ^
 easy?
 it looks like magic
-let's unpack
-
----
-
-### `(A -> A) -> (B -> B)` 
-### `>>>`
-### `(B -> B) -> (C -> C)`
-### `=`
-### `(A -> A) -> (C -> C)`
-
-^
-let's use the real types
-
----
-
-#### `(String -> String) -> (VS<Button> -> VS<Button>)` 
-#### `>>>`
-#### `(VS<Button> -> VS<Button>) -> (LoginPage -> LoginPage)`
-#### `=`
-#### `(String -> String) -> (LoginPage -> LoginPage)`
 
 ---
 
@@ -735,14 +718,14 @@ property-based testing libraries: I'm not getting into it
 extension WritableKeyPath {
   var lens: Lens<Root,Value> {
     return Lens<Root,Value>.init(
-      get: { whole in 
-        whole[keyPath: self] 
+      get: { root in 
+        root[keyPath: self] 
       },
-      set: { part in
-        { whole in
-          var m = whole
-          m[keyPath: self] = part
-          return m
+      set: { value in
+        { root in
+          var mutableRoot = root
+          mutableRoot[keyPath: self] = value
+          return mutableRoot
         }
       }
     )
@@ -750,8 +733,6 @@ extension WritableKeyPath {
 }
 
 let passwordLens = (\LoginPage.credentials.passwordField.text).lens
-
-let passwordLensAgain = °\LoginPage.credentials.passwordField.text
 ```
 
 ---
@@ -767,14 +748,14 @@ let passwordLensAgain = °\LoginPage.credentials.passwordField.text
 extension Dictionary {
   static func lens(at key: Key) -> Lens<Dictionary,Value?> {
     return Lens<Dictionary,Value?>(
-      get: { 
-        $0[key]
+      get: { dict in
+        dict[key]
       },
-      set: { part in
-        { whole in
-          var m_dict = whole
-          m_dict[key] = part
-          return m_dict
+      set: { value in
+        { dict in
+          var mutableDict = dict
+          mutableDict[key] = value
+          return mutableDict
         }
       }
     )
@@ -792,14 +773,14 @@ lens laws are the answer
 extension Dictionary {
   static func lens(at key: Key) -> Lens<Dictionary,Value?> {
     return Lens<Dictionary,Value?>(
-      get: { 
-        $0[key]
+      get: { dict in
+        dict[key]
       },
-      set: { part in
-        { whole in
-          var m_dict = whole
-          m_dict[key] = part
-          return m_dict
+      set: { value in
+        { dict in
+          var mutableDict = dict
+          mutableDict[key] = value
+          return mutableDict
         }
       }
     )
@@ -830,7 +811,7 @@ extension Optional {
 
 ---
 
-### `Lens<A,B?> + Prism<B?,B> + Lens<B,C> = ?`
+### [fit] `Lens<A,B?> + Prism<B?,B> + Lens<B,C> = ?`
 
 ---
 
@@ -841,12 +822,13 @@ struct Affine<Whole,Part> {
 }
 
 /// laws are similar to lens'
+
 /// es. Affine to an index of an Array
 ```
 
 ---
 
-### `Lens<A,B> + Prism<B,C> = Affine<A,C>`
+### [fit] `Lens<A,B> + Prism<B,C> = Affine<A,C>`
 
 ---
 
